@@ -1,24 +1,40 @@
+# VARS
 
-#INSTALL FRE ACCESS
-function InstallFre {
+$Img = 'https://i.imgur.com/JcdvSXZ.jpeg' # IMAGE DOWNLOAD
+$Dst = @('.\fundo.jpg', '.\logo.jpg', '.\abertura.jpg') 
+$Patch = 'C:\Program Files (x86)\FRE\FREACCESSCONDOMINIO\DADOS\'
+
+
+
+# FUNCTIONS #
+
+# INSTALL
+
+function installFre {
     $freFile = 'https://drive.google.com/uc?id=14RuowEiT0Aomu2IaODbGNkdZg9p9mMLT&export=download&confirm=1&uuid=b56d31a9-ea84-458b-a00b-ca2eb41e358d'
     Invoke-WebRequest -Uri $freFile -OutFile '.\FRE_INSTALADOR.zip'
     Start-Sleep -s 5
     Expand-Archive '.\FRE_INSTALADOR.zip' -Destination '.\'
-    start '.\FRE_INSTALADOR.exe'    
+    Start-Process '.\FRE_INSTALADOR.exe'    
 }
 
-# Set-ExecutionPolicy -ExecutionPolicy Bypass
+# UPDATE BACKGROUND
 
-# # Imagens
+function upBack {
+    "Test to see if folder [$Patch]  exists"
+    if (Test-Path -Path $Patch) {
+        for ($num = 0 ; $num -lt $Dst.Count ; $num++) {
+            Invoke-WebRequest $Img -OutFile $Dst[$num]
+            Move-Item -Path $Dst[$num] -Force -Destination $Patch
+        }
+        "Path exists!"
+    }
+    else {
+        "Path doesn't exist."
+    }   
+}
 
-$Img = 'https://i.imgur.com/JcdvSXZ.jpeg'
-# Destino
-
-$Destino = @('.\fundo.jpg', '.\logo.jpg', '.\abertura.jpg')
-
-$Patch = 'C:\Program Files (x86)\FRE\FREACCESSCONDOMINIO\DADOS\'
-
+# MENU
 function DisplayMenu {
     Clear-Host
     Write-Host @"
@@ -37,23 +53,13 @@ function DisplayMenu {
     Switch ($MENU) {
         1 {
             #OPTION1 - CHANGE BACKGROUND
-            "Test to see if folder [$Patch]  exists"
-            if (Test-Path -Path $Patch) {
-                for ($num = 0 ; $num -lt $Destino.Count ; $num++) {
-                    Invoke-WebRequest $Img -OutFile $Destino[$num]
-                    Move-Item -Path $Destino[$num] -Force -Destination $Patch
-                }
-                "Path exists!"
-            }
-            else {
-                "Path doesn't exist."
-            }
+            upBack
             Start-Sleep -Seconds 2
             DisplayMenu
         }
         2 {
             #OPTION2 - DISPLAY MESSAGE
-            InstallFre
+            nstallFre
             Start-Sleep -Seconds 2
             DisplayMenu
         }
@@ -71,3 +77,5 @@ function DisplayMenu {
     }
 }
 DisplayMenu
+
+# Set-ExecutionPolicy -ExecutionPolicy Bypass
